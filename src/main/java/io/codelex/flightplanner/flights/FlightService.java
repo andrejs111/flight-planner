@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 @Service
 public class FlightService {
@@ -90,6 +91,15 @@ public class FlightService {
         } while (idExists);
 
         return id;
+    }
+
+    public Airport[] searchAirports(String string) {
+        String pattern = string.toLowerCase().trim();
+        return this.flightRepository.getAddedFlights().stream()
+                .flatMap(flight -> Stream.of(flight.getFrom(), flight.getTo()))
+                .filter(airport -> airport.toString().toString().toLowerCase().contains(pattern))
+                .distinct()
+                .toArray(Airport[]::new);
     }
 
     //// Helper methods
