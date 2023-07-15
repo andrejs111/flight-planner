@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -32,25 +32,41 @@ public class FlightService {
     }
 
     public Flight addFlight(AddFlightRequest flightRequest) {
-        Flight flightToAdd = new Flight();
 
         Airport departureAirport = new Airport(flightRequest.getFrom().getCountry(), flightRequest.getFrom().getCity(), flightRequest.getFrom().getAirport());
         Airport arrivalAirport = new Airport(flightRequest.getTo().getCountry(), flightRequest.getTo().getCity(), flightRequest.getTo().getAirport());
 
-        flightToAdd.setId(generateID(flightRequest));
-        flightToAdd.setFrom(departureAirport);
-        flightToAdd.setTo(arrivalAirport);
-        flightToAdd.setCarrier(flightRequest.getCarrier());
-        flightToAdd.setDepartureTime(flightRequest.getDepartureTime());
-        flightToAdd.setArrivalTime(flightRequest.getArrivalTime());
+        String departureTime = flightRequest.getDepartureTime();
+        String arrivalTime = flightRequest.getArrivalTime();
 
-        this.flightRepository.listFlights().add(flightToAdd);
+        String flightId = generateID(flightRequest);
+
+        Flight flightToAdd = new Flight(flightId, departureAirport, arrivalAirport, flightRequest.getCarrier(),
+                departureTime, arrivalTime);
+
+        if (checkIfFlightExists(flightToAdd)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Flight ID already exists!");
+        }
+        if (checkAirports(departureAirport, arrivalAirport)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Flight can't land in the same airport!");
+        }
+        if (checkTimes(departureTime, arrivalTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Departure and arrival times don't make sense!");
+        }
+        this.flightRepository.getAddedFlights().add(flightToAdd);
         return flightToAdd;
     }
 
+
     public void clearFlights() {
-        this.flightRepository.listFlights().clear();
+        this.flightRepository.getAddedFlights().clear();
     }
+
+    public void deleteFlight(String id) {
+        List<Flight> flights = this.flightRepository.getAddedFlights();
+        flights.removeIf(flight -> flight.getId().equals(id));
+    }
+
 
     public String generateID(AddFlightRequest flightRequest) {
         Random random = new Random();
@@ -75,4 +91,29 @@ public class FlightService {
 
         return id;
     }
+
+    //// Helper methods
+
+    private Boolean checkIfFlightExists(Flight flightToCheck) {
+        return this.flightRepository.getAddedFlights().stream()
+                .anyMatch(flight ->
+                        flight.getFrom().equals(flightToCheck.getFrom()) &&
+                                flight.getTo().equals(flightToCheck.getTo()) &&
+                                flight.getCarrier().equals(flightToCheck.getCarrier()) &&
+                                flight.getDepartureTime().equals(flightToCheck.getDepartureTime()) &&
+                                flight.getArrivalTime().equals(flightToCheck.getArrivalTime())
+                );
+    }
+    public Boolean checkAirports(Airport first, Airport second) {
+        return first.toString().replaceAll(" ", "").equalsIgnoreCase(second.toString().replaceAll(" ", ""));
+    }
+
+    public Boolean checkTimes(String departureTime, String arrivalTime) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime departure = LocalDateTime.parse(departureTime, formatter);
+        LocalDateTime arrival = LocalDateTime.parse(arrivalTime, formatter);
+        return departure.equals(arrival) || arrival.isBefore(departure);
+    }
+
 }

@@ -28,4 +28,9 @@ public class AdminClientController {
     public Flight fetchFlight(@PathVariable String id) {
         return this.flightService.fetchFlight(id);
     }
+
+    @DeleteMapping("/flights/{id}")
+    public void deleteFlight(@PathVariable String id) {
+        this.flightService.deleteFlight(id);
+    }
 }
