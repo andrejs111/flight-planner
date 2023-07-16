@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.flights;
+package io.codelex.flightplanner.flights.repositories;
 
 import io.codelex.flightplanner.flights.domain.Flight;
 import lombok.Data;

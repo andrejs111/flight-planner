@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.flights;
+package io.codelex.flightplanner.flights.repositories;
 
 import lombok.Data;
 import org.springframework.stereotype.Repository;

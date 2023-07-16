@@ -1,14 +1,19 @@
-package io.codelex.flightplanner.flights;
+package io.codelex.flightplanner.flights.service;
 
 import io.codelex.flightplanner.flights.domain.Airport;
 import io.codelex.flightplanner.flights.domain.Flight;
+import io.codelex.flightplanner.flights.repositories.FlightIdRepository;
+import io.codelex.flightplanner.flights.repositories.FlightRepository;
 import io.codelex.flightplanner.flights.requests.AddFlightRequest;
+import io.codelex.flightplanner.flights.requests.SearchFlightRequest;
+import io.codelex.flightplanner.flights.response.PageResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -32,7 +37,7 @@ public class FlightService {
         return flight;
     }
 
-    public Flight addFlight(AddFlightRequest flightRequest) {
+    public synchronized Flight addFlight(AddFlightRequest flightRequest) {
 
         Airport departureAirport = new Airport(flightRequest.getFrom().getCountry(), flightRequest.getFrom().getCity(), flightRequest.getFrom().getAirport());
         Airport arrivalAirport = new Airport(flightRequest.getTo().getCountry(), flightRequest.getTo().getCity(), flightRequest.getTo().getAirport());
@@ -63,7 +68,7 @@ public class FlightService {
         this.flightRepository.getAddedFlights().clear();
     }
 
-    public void deleteFlight(String id) {
+    public synchronized void deleteFlight(String id) {
         List<Flight> flights = this.flightRepository.getAddedFlights();
         flights.removeIf(flight -> flight.getId().equals(id));
     }
@@ -100,6 +105,15 @@ public class FlightService {
                 .filter(airport -> airport.toString().toString().toLowerCase().contains(pattern))
                 .distinct()
                 .toArray(Airport[]::new);
+    }
+
+    public PageResult<Flight> searchFlights(SearchFlightRequest flightRequest) {
+        List<Flight> foundFlights = this.flightRepository.getAddedFlights().stream()
+                .filter(flight -> flight.getFrom().getAirport().equalsIgnoreCase(flightRequest.getFrom()) &&
+                        flight.getTo().getAirport().equalsIgnoreCase(flightRequest.getTo()) &&
+                        flight.getDepartureTime().substring(0,10).equals(flightRequest.getDepartureDate()))
+                .toList();
+        return new PageResult<>(0, foundFlights.size(), foundFlights);
     }
 
     //// Helper methods
