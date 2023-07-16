@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -28,6 +29,8 @@ public class FlightService {
         this.flightRepository = flightRepository;
         this.flightIdRepository = flightIdRepository;
     }
+
+    ///// Admin client methods
 
     public Flight fetchFlight(String id) {
         Flight flight = flightRepository.fetchFlight(id);
@@ -63,11 +66,6 @@ public class FlightService {
         return flightToAdd;
     }
 
-
-    public void clearFlights() {
-        this.flightRepository.getAddedFlights().clear();
-    }
-
     public synchronized void deleteFlight(String id) {
         List<Flight> flights = this.flightRepository.getAddedFlights();
         flights.removeIf(flight -> flight.getId().equals(id));
@@ -98,6 +96,8 @@ public class FlightService {
         return id;
     }
 
+    ///// Customer client methods
+
     public Airport[] searchAirports(String string) {
         String pattern = string.toLowerCase().trim();
         return this.flightRepository.getAddedFlights().stream()
@@ -108,12 +108,31 @@ public class FlightService {
     }
 
     public PageResult<Flight> searchFlights(SearchFlightRequest flightRequest) {
+        if (flightRequest.getFrom() == null || flightRequest.getTo() == null || flightRequest.getDepartureDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Every search field must be filled!");
+        }
+        if (flightRequest.getFrom().equals(flightRequest.getTo())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The departure and arrival airports are the same!");
+        }
         List<Flight> foundFlights = this.flightRepository.getAddedFlights().stream()
                 .filter(flight -> flight.getFrom().getAirport().equalsIgnoreCase(flightRequest.getFrom()) &&
                         flight.getTo().getAirport().equalsIgnoreCase(flightRequest.getTo()) &&
-                        flight.getDepartureTime().substring(0,10).equals(flightRequest.getDepartureDate()))
+                        flight.getDepartureTime().substring(0, 10).equals(flightRequest.getDepartureDate()))
                 .toList();
         return new PageResult<>(0, foundFlights.size(), foundFlights);
+    }
+
+    public Flight findFlightById(String id) {
+        return flightRepository.getAddedFlights().stream()
+                .filter(flight -> flight.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No flights with this ID!"));
+    }
+
+    //// Testing client methods
+
+    public void clearFlights() {
+        this.flightRepository.getAddedFlights().clear();
     }
 
     //// Helper methods
@@ -139,5 +158,4 @@ public class FlightService {
         LocalDateTime arrival = LocalDateTime.parse(arrivalTime, formatter);
         return departure.equals(arrival) || arrival.isBefore(departure);
     }
-
 }

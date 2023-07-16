@@ -23,7 +23,6 @@ public class AdminClientController {
     public Flight addFlight(@Valid @RequestBody AddFlightRequest flightRequest) {
         return this.flightService.addFlight(flightRequest);
     }
-
     @GetMapping("/flights/{id}")
     public Flight fetchFlight(@PathVariable String id) {
         return this.flightService.fetchFlight(id);

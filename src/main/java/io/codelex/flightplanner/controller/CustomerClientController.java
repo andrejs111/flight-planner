@@ -5,6 +5,7 @@ import io.codelex.flightplanner.flights.requests.SearchFlightRequest;
 import io.codelex.flightplanner.flights.response.PageResult;
 import io.codelex.flightplanner.flights.service.FlightService;
 import io.codelex.flightplanner.flights.domain.Airport;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +21,11 @@ public class CustomerClientController {
         return this.flightService.searchAirports(search);
     }
     @PostMapping("/flights/search")
-    public PageResult<Flight> searchFlights(SearchFlightRequest flightRequest) {
+    public PageResult<Flight> searchFlights(@Valid @RequestBody SearchFlightRequest flightRequest) {
        return this.flightService.searchFlights(flightRequest);
+    }
+    @GetMapping("/flights/{id}")
+    public Flight findFlightById(@PathVariable String id) {
+        return this.flightService.findFlightById(id);
     }
 }
