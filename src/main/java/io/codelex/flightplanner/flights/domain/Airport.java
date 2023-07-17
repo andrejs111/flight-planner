@@ -2,7 +2,6 @@ package io.codelex.flightplanner.flights.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class Airport {

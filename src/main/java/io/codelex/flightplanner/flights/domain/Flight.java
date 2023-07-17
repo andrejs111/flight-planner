@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Data
 public class Flight {
     private String id;
@@ -20,8 +16,6 @@ public class Flight {
     @JsonProperty("arrivalTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private String arrivalTime;
-    public Flight() {
-    }
 
     public Flight(String id, Airport from, Airport to, String carrier, String departureTime, String arrivalTime) {
         this.id = id;
@@ -39,4 +33,8 @@ public class Flight {
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
     }
+
+    public Flight() {
+    }
+
 }

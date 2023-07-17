@@ -17,6 +17,7 @@ public class TestingClientController {
         this.flightService = flightService;
         this.flightRepository = flightRepository;
     }
+
     @PostMapping("/clear")
     public void clearFlights() {
         this.flightService.clearFlights();

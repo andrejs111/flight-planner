@@ -13,8 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -147,6 +145,7 @@ public class FlightService {
                                 flight.getArrivalTime().equals(flightToCheck.getArrivalTime())
                 );
     }
+
     public Boolean checkAirports(Airport first, Airport second) {
         return first.toString().replaceAll(" ", "").equalsIgnoreCase(second.toString().replaceAll(" ", ""));
     }

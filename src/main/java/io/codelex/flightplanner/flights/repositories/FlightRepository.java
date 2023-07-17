@@ -21,8 +21,4 @@ public class FlightRepository {
                 .findAny()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Flight with this ID doesn't exist!"));
     }
-
-    public void setAddedFlights(List<Flight> updatedFlights) {
-        this.addedFlights = updatedFlights;
-    }
 }

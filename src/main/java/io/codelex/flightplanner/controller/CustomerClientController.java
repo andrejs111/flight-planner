@@ -16,14 +16,17 @@ public class CustomerClientController {
     public CustomerClientController(FlightService flightService) {
         this.flightService = flightService;
     }
+
     @GetMapping("/airports")
     public Airport[] searchAirports(@RequestParam String search) {
         return this.flightService.searchAirports(search);
     }
+
     @PostMapping("/flights/search")
     public PageResult<Flight> searchFlights(@Valid @RequestBody SearchFlightRequest flightRequest) {
-       return this.flightService.searchFlights(flightRequest);
+        return this.flightService.searchFlights(flightRequest);
     }
+
     @GetMapping("/flights/{id}")
     public Flight findFlightById(@PathVariable String id) {
         return this.flightService.findFlightById(id);
