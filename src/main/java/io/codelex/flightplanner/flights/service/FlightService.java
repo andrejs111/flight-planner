@@ -158,4 +158,8 @@ public class FlightService {
         LocalDateTime arrival = LocalDateTime.parse(arrivalTime, formatter);
         return departure.equals(arrival) || arrival.isBefore(departure);
     }
+
+    public List<Flight> getFlights() {
+        return this.flightRepository.getAddedFlights();
+    }
 }
