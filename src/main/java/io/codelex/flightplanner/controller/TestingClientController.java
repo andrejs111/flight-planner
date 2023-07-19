@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/testing-api")
 public class TestingClientController {
 
-    FlightService flightService;
-    FlightRepository flightRepository;
+    private FlightService flightService;
 
-    public TestingClientController(FlightService flightService, FlightRepository flightRepository) {
-        this.flightService = flightService;
-        this.flightRepository = flightRepository;
+    public TestingClientController(FlightService flightService) {
+        this.flightService = flightService;;
     }
 
     @PostMapping("/clear")

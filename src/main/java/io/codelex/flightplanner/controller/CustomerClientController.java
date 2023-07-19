@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class CustomerClientController {
-    FlightService flightService;
+   private FlightService flightService;
 
     public CustomerClientController(FlightService flightService) {
         this.flightService = flightService;

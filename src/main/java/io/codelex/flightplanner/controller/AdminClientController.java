@@ -18,7 +18,7 @@ public class AdminClientController {
     }
 
     @PutMapping("/flights")
-    @ResponseStatus(HttpStatus.CREATED)                                      // because PUT returns 200 by default
+    @ResponseStatus(HttpStatus.CREATED)
     public Flight addFlight(@Valid @RequestBody AddFlightRequest flightRequest) {
         return this.flightService.addFlight(flightRequest);
     }

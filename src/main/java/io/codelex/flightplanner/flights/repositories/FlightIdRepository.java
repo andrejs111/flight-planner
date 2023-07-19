@@ -15,7 +15,4 @@ public class FlightIdRepository {
 
     private final List<String> generatedIds;
 
-    public FlightIdRepository(List<String> generatedIds) {
-        this.generatedIds = generatedIds;
-    }
 }

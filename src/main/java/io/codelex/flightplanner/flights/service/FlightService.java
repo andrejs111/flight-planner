@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 @Service
 public class FlightService {
 
-    FlightRepository flightRepository;
-    FlightIdRepository flightIdRepository;
+    private FlightRepository flightRepository;
+    private FlightIdRepository flightIdRepository;
 
     public FlightService(FlightRepository flightRepository, FlightIdRepository flightIdRepository) {
         this.flightRepository = flightRepository;
